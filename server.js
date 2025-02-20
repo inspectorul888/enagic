@@ -11,30 +11,30 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(bodyParser.json());
 
-// Load Slack Webhook URL and API URL from environment variables
+// Load Slack Webhook URL and Devi AI API URL from environment variables
 const SLACK_WEBHOOK_URL = process.env.SLACK_WEBHOOK_URL;
-const ENAGIC_AI_API_URL = process.env.ENAGIC_AI_API_URL; // Replace with relevant API when available
+const DEVI_AI_API_URL = process.env.DEVI_AI_API_URL;
 
-// Add keyword list for Enagic-related topics
+// Add the keyword list for Enagic
 const FILTER_KEYWORDS = [
-  "alkaline water", "ionized water", "Kangen Water", "hydrogen-rich water", 
+  "alkaline water", "ionized water", "Kangen Water", "hydrogen-rich water",
   "water ionizer", "best drinking water", "hydration benefits", "electrolyzed water",
-  "water purification", "structured water", "best water for health", 
-  "antioxidant water", "alkaline diet", "acidic vs alkaline", "anti-oxidation", 
-  "anti-inflammation", "water detox", "removing toxins with water", 
+  "water purification", "structured water", "best water for health",
+  "antioxidant water", "alkaline diet", "acidic vs alkaline", "anti-oxidation",
+  "anti-inflammation", "water detox", "removing toxins with water",
   "hydration for health", "Kangen machine", "water experiment", "how to stay hydrated",
   "healthy drinking water", "filtered water vs bottled water", "alkaline vs acidic water",
   "reverse osmosis vs ionized water", "best water for inflammation", "water for skin health",
-  "hydration and energy", "dehydration effects", "water and pH balance", 
+  "hydration and energy", "dehydration effects", "water and pH balance",
   "why drink ionized water", "water and digestion", "alkaline water benefits"
 ];
 
-// Function to check if a post contains any relevant keyword
+// Function to check if a post contains any keyword
 const containsKeyword = (content) => {
   return FILTER_KEYWORDS.some(keyword => content.toLowerCase().includes(keyword.toLowerCase()));
 };
 
-// ✅ Webhook to receive data from Enagic AI or any lead system
+// ✅ Webhook to receive data from Devi AI
 app.post("/proxy-webhook", async (req, res) => {
   try {
     const leads = req.body.items || [];
@@ -61,14 +61,14 @@ app.post("/slack/actions", async (req, res) => {
   res.status(200).send("Action received");
 });
 
-// ✅ Manual Pull Data from Enagic AI
-app.get("/pull-enagic-ai", async (req, res) => {
+// ✅ Manual Pull Data from Devi AI
+app.get("/pull-devi-ai", async (req, res) => {
   try {
-    if (!ENAGIC_AI_API_URL) {
-      return res.status(500).send("Enagic AI API URL is missing in environment variables");
+    if (!DEVI_AI_API_URL) {
+      return res.status(500).send("Devi AI API URL is missing in environment variables");
     }
 
-    const response = await axios.get(ENAGIC_AI_API_URL);
+    const response = await axios.get(DEVI_AI_API_URL);
     const leads = response.data.items || [];
     console.log("Manually pulled leads:", leads.length);
 
@@ -78,10 +78,10 @@ app.get("/pull-enagic-ai", async (req, res) => {
       }
     }
 
-    res.status(200).send("Manual Enagic AI pull successful");
+    res.status(200).send("Manual Devi AI pull successful");
   } catch (error) {
-    console.error("Error fetching Enagic AI data:", error);
-    res.status(500).send("Error fetching Enagic AI data");
+    console.error("Error fetching Devi AI data:", error);
+    res.status(500).send("Error fetching Devi AI data");
   }
 });
 
@@ -93,7 +93,7 @@ async function sendToSlack(lead) {
   }
 
   const slackMessage = {
-    text: `🚀 *New Enagic Lead!*`,
+    text: `🚀 *New Enagic Lead from Devi AI!*`,
     attachments: [
       {
         color: "#36a64f",
